@@ -28,7 +28,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Copy Firebase config if present
-COPY src/main/resources/firebase-service-account.json /app/firebase-service-account.json
+# COPY src/main/resources/firebase-service-account.json /app/firebase-service-account.json
 
 # Expose port
 EXPOSE 8080
