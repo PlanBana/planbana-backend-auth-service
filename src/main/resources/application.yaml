@@ -15,7 +15,7 @@ app:
     refresh-token-days: 7
 
 firebase:
-  config: /etc/secrets/firebase-service-account.json
+  config: ${FIREBASE_CONFIG:classpath:firebase-service-account.json}
 
 logging:
   level:
