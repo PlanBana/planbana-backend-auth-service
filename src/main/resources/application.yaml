@@ -1,0 +1,22 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: auth-service
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb+srv://<user>:<pass>@cluster0.mongodb.net/auth_service}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:c3VwZXJzZWNyZXRrZXk=} # "supersecretkey" base64 as placeholder
+    access-token-minutes: 15
+    refresh-token-days: 7
+
+firebase:
+  config: ${FIREBASE_CONFIG:classpath:firebase-service-account.json}
+
+logging:
+  level:
+    root: INFO
