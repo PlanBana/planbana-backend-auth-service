@@ -7,7 +7,8 @@ import lombok.Setter;
 
 public class AuthDtos {
 
-    @Getter @Setter
+    @Getter
+    @Setter
     public static class RegisterMinimalRequest {
         @NotBlank
         private String firebaseIdToken;
@@ -17,7 +18,8 @@ public class AuthDtos {
         private String password;
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     public static class FirebaseLoginRequest {
         @NotBlank
         private String firebaseIdToken;
@@ -27,13 +29,15 @@ public class AuthDtos {
         private String password;
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     public static class CheckPhoneRequest {
         @NotBlank
         private String firebaseIdToken;
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     public static class RefreshRequest {
         @NotBlank
         private String refreshToken;

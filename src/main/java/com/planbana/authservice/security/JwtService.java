@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class JwtService {
@@ -28,11 +25,19 @@ public class JwtService {
         this.refreshDays = props.getRefreshTokenDays();
     }
 
-    public String generateAccess(String subject, Set<String> roles) {
-        return generateAccess(subject, Map.of("roles", List.copyOf(roles)));
+    /**
+     * Generate an access token. For now the subject is the phone number,
+     * but we also include it explicitly as the "phone" claim so that
+     * we can later move the subject to userId without breaking consumers.
+     */
+    public String generateAccess(String phone, Set<String> roles) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", List.copyOf(roles));
+        claims.put("phone", phone);
+        return generateAccessInternal(phone, claims);
     }
 
-    public String generateAccess(String subject, Map<String, Object> claims) {
+    private String generateAccessInternal(String subject, Map<String, Object> claims) {
         Instant now = Instant.now();
         Instant exp = now.plusSeconds(accessMinutes * 60);
         return Jwts.builder()
@@ -57,7 +62,7 @@ public class JwtService {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            parseClaims(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -65,25 +70,24 @@ public class JwtService {
     }
 
     public String getUsername(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+        return parseClaims(token).getSubject();
     }
 
     @SuppressWarnings("unchecked")
     public List<String> getRoles(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = parseClaims(token);
         Object roles = claims.get("roles");
         if (roles instanceof List<?> list) {
             return list.stream().map(Object::toString).toList();
         }
         return List.of();
+    }
+
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
